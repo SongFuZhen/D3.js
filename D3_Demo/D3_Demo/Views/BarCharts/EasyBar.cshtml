@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "简单柱状图";
+}
+
+<style type="text/css">
+    .bar {
+        fill: steelblue;
+    }
+
+    .bar:hover {
+      fill: brown;
+    }
+
+    .axis--x path {
+      display: none;
+    }
+</style>
+
+<div style="border-radius: 4px; background:white; margin: 20px;">
+    <h4 style="font-weight:bold; text-align:center; padding-top: 20px;">英文字母使用频率分布图</h4>
+    <hr style="border-color: #e4e7ea; border-width: 2px;" />
+    <svg></svg>
+</div>
+
+@Scripts.Render("~/bundles/barchart")
+
+<script type="text/javascript">
+    drawBarChart();
+
+    $(window).resize(function () {
+        drawBarChart();
+    });
+
+    function drawBarChart() {
+        $("svg").empty();
+
+        // data 使用tsv格式： 请求一个TSV（制表符分隔值）的文件。
+        var svgWidth = $(window).width() - 100;
+        var svgHeight = $(window).height() - 300;
+        BarChart.InitSize(svgWidth, svgHeight, "svg");
+
+        // 开始自定义内容
+        var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+            y = d3.scaleLinear().rangeRound([height, 0]);
+
+        var g = barSvg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        d3.tsv("/Data/EasyBar/data.tsv", function (d) {
+            d.frequency = d.frequency;
+            return d;
+        }, function (error, data) {
+            if (error) throw error;
+            x.domain(data.map(function (d) { return d.letter; }));
+            y.domain([0, d3.max(data, function (d) { return d.frequency; })]);
+
+            g.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            g.append("g")
+                .attr("class", "axis axis--y")
+                .call(d3.axisLeft(y).ticks(10, "%"))
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "center")
+                .text("Frequency");
+
+            var bar = g.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) { return x(d.letter); })
+                .attr("y", function (d) { return y(d.frequency); })
+                .attr("width", x.bandwidth())
+                .attr("height", function (d) { return height - y(d.frequency); });
+
+            bar.append("rect")
+                .attr("y", function (d) { return y(d.frequency); })
+                .attr("height", function (d) { return y(d.frequency); })
+                .attr("width", x.bandwidth());
+
+            bar.append("text")
+                .attr("x", function (d) { return x(d.letter); })
+                .attr("y", function (d) { return y(d.frequency); })
+                .attr("dy", function (d) { return ((d.class == 'negative') ? '-' : '') + ".75em" })
+                .text(function (d) { return d.frequency * 100 + "%"; });
+        });
+    }
+</script>

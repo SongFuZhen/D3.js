@@ -30,6 +30,10 @@ namespace D3_Demo
                       "~/Content/site.css",
                       "~/Content/font-awesome.css"
                       ));
+
+            bundles.Add(new ScriptBundle("~/bundles/barchart").Include(
+                "~/Scripts/bar-chart.js"
+                ));
         }
     }
 }
