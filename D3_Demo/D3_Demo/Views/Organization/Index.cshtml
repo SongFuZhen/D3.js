@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "组织架构图";
+}
+
+<style type="text/css">
+    /* 显示各个节点的样式 */
+
+</style>
+
+<div id="tree-container"></div>
+
+@Scripts.Render("~/bundles/organization")
+
+<script type="text/javascript">
+    // 显示 JSON 数据， 进行处理
+    Organization.init();
+</script>
+

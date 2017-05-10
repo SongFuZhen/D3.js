@@ -34,6 +34,10 @@ namespace D3_Demo
             bundles.Add(new ScriptBundle("~/bundles/barchart").Include(
                 "~/Scripts/bar-chart.js"
                 ));
+
+            bundles.Add(new ScriptBundle("~/bundles/organization").Include(
+                "~/Scripts/organization.js"
+                ));
         }
     }
 }
